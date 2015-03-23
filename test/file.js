@@ -9,10 +9,17 @@ import File from '../src/file';
 
 describe('Migration file', () => {
 
+  let clock;
+  before(() => {
+    clock = sinon.useFakeTimers();
+  });
+  after(() => {
+    clock.restore();
+  });
+
   describe('Constructor', () => {
 
     it('generates a filename with the timestamp', () => {
-      const clock = sinon.useFakeTimers();
       const file = new File('name', {
         extension: 'js'
       });
