@@ -4,7 +4,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {isAbsolute} from 'path';
 import 'babel/polyfill';
-import File from '../lib/file';
+import File from '../src/file';
 
 describe('Migration file', () => {
 

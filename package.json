@@ -2,7 +2,7 @@
   "name": "arctic",
   "version": "0.0.0",
   "description": "Database migration API for Knex",
-  "main": "./lib",
+  "main": "./src",
   "scripts": {
     "test": "mocha --compilers js:babel/register"
   },
