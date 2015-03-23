@@ -8,7 +8,7 @@ import template from 'lodash.template';
 
 fs = Promise.promisifyAll(fs);
 
-module.exports = class MigrationFile {
+export default class MigrationFile {
   constructor (name, config) {
     const extension = config.extension;
     this.filename = filename(name, extension);

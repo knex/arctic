@@ -9,7 +9,7 @@ const defaults = {
   directory: './migrations'
 };
 
-class Migrator {
+export default class Migrator {
   constructor (knex) {
     this.knex = knex;
     this.config = extend(defaults, knex.client.migrationConfig);
@@ -19,5 +19,3 @@ class Migrator {
     return this;
   }
 }
-
-export default Migrator;
