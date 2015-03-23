@@ -4,6 +4,7 @@ import {expect} from 'chai';
 import sinon from 'sinon';
 import {isAbsolute} from 'path';
 import 'babel/polyfill';
+import fs from 'fs';
 import File from '../src/file';
 
 describe('Migration file', () => {
@@ -39,6 +40,33 @@ describe('Migration file', () => {
         stub: 'thestub.js'
       }))
       .to.have.property('stub', 'thestub.js');
+    });
+
+  });
+
+  describe('#template', () => {
+
+    it('resolves a compiled template', () => {
+      const stub = 'stub.js';
+      sinon.stub(fs, 'readFile')
+        .withArgs(stub)
+        .yields(null, new Buffer('<%= d.tableName %>'));
+      return new File('name', {
+        stub
+      })
+      .template()
+      .then((template) => {
+        expect(template).to.be.a('function');
+        return template({
+          tableName: 'table'
+        });
+      })
+      .then((output) => {
+        expect(output).to.equal('table');
+      })
+      .finally(() => {
+        fs.readFile.restore();
+      });
     });
 
   });

@@ -16,7 +16,7 @@ module.exports = class MigrationFile {
     this.stub = config.stub || join(__dirname, 'stubs', `stub.${extension}`);
   }
   template () {
-    return fs.readFile(this.stub)
+    return fs.readFileAsync(this.stub)
       .call('toString')
       .then(function (stub) {
         return template(stub, {
@@ -28,7 +28,7 @@ module.exports = class MigrationFile {
     return this.template()
       .bind(this)
       .then(function (template) {
-        return fs.writeFile(
+        return fs.writeFileAsync(
           join(directory, this.filename),
           template(this.variables)
         );
