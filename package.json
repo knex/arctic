@@ -28,9 +28,13 @@
   "devDependencies": {
     "babel": "^4.7.16",
     "chai": "^2.1.2",
-    "mocha": "^2.2.1"
+    "mocha": "^2.2.1",
+    "sinon": "^1.14.1"
   },
   "dependencies": {
+    "bluebird": "^2.9.14",
+    "easydate": "^1.2.1",
+    "lodash.template": "^3.3.2",
     "xtend": "^4.0.0"
   }
 }
