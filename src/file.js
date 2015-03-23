@@ -39,6 +39,5 @@ module.exports = class MigrationFile {
 };
 
 function filename (name, extension) {
-  if (name.charAt(0) === '-') name = name.slice(1);
   return `${date('YMdhms')}_${name}.${extension}`;
 }
