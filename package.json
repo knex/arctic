@@ -29,8 +29,10 @@
   "devDependencies": {
     "babel": "^4.7.16",
     "chai": "^2.1.2",
+    "chai-as-promised": "^4.3.0",
     "isparta": "^2.2.0",
     "mocha": "^2.2.1",
+    "proxyquire": "^1.4.0",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^2.0.3",
     "sinon-chai": "^2.7.0"
