@@ -25,15 +25,16 @@ module.exports = class MigrationFile {
       });
   }
   write (directory) {
+    const destination = join(directory, this.filename);
     return this.template()
       .bind(this)
       .then(function (template) {
         return fs.writeFileAsync(
-          join(directory, this.filename),
+          destination,
           template(this.variables)
         );
       })
-      .return(join(directory, this.filename));
+      .return(destination);
   }
 };
 

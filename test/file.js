@@ -1,11 +1,16 @@
 'use strict';
 
-import {expect} from 'chai';
+import chai from 'chai';
 import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import 'sinon-as-promised';
+import template from 'lodash.template';
 import {isAbsolute} from 'path';
 import 'babel/polyfill';
 import fs from 'fs';
 import File from '../src/file';
+
+const expect = chai.use(sinonChai).expect;
 
 describe('Migration file', () => {
 
@@ -74,6 +79,44 @@ describe('Migration file', () => {
       .finally(() => {
         fs.readFile.restore();
       });
+    });
+
+  });
+
+  describe('#write', () => {
+
+    const file = new File('name', {
+      variables: {
+        tableName: 'table'
+      }
+    });
+    file.filename = 'name.js';
+    sinon.stub(file, 'template')
+      .resolves(template('<%= d.tableName %>', {
+        variable: 'd'
+      }));
+    before(() => {
+      sinon.stub(fs, 'writeFile').yields(null);
+    });
+    after(() => {
+      fs.writeFile.restore();
+    });
+
+    it('writes the migration file', function () {
+      return file.write('thedir')
+        .then(() => {
+          expect(fs.writeFile).to.have.been.calledWith(
+            'thedir/name.js',
+            'table'
+          );
+        });
+    });
+
+    it('resolves the path', function () {
+      return file.write('thedir')
+        .then((path) => {
+          expect(path).to.equal('thedir/name.js')
+        });
     });
 
   });
