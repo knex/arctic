@@ -5,8 +5,7 @@
   "main": "./src",
   "scripts": {
     "lint": "standard",
-    "test": "npm run lint && babel-tape-runner test/*",
-    "coverage": "babel-node $(npm bin)/isparta cover --report text --report html $(npm bin)/_mocha -- --reporter dot"
+    "test": "npm run lint && babel-tape-runner test/*"
   },
   "repository": {
     "type": "git",
