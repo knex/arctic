@@ -1,122 +1,75 @@
 'use strict'
 
-/* global describe, it, before, after */
-
-import chai from 'chai'
+import test from 'blue-tape'
 import sinon from 'sinon'
-import sinonChai from 'sinon-chai'
 import 'sinon-as-promised'
 import template from 'lodash.template'
 import {isAbsolute} from 'path'
-import 'babel/polyfill'
 import fs from 'fs'
 import File from '../src/file'
 
-const expect = chai.use(sinonChai).expect
-
-describe('Migration file', () => {
-  let clock
-  before(() => {
-    clock = sinon.useFakeTimers(0)
+test('Constructor', (t) => {
+  const clock = sinon.useFakeTimers()
+  const variables = {}
+  const file = new File('f', {
+    extension: 'js',
+    variables
   })
-  after(() => {
-    clock.restore()
-  })
+  t.equal(file.filename, '19700101190000_f.js', 'generates filename with timestamp')
+  t.equal(file.variables, variables, 'assigns variables')
+  t.ok(isAbsolute(file.stub), 'absolute path to stub')
+  t.ok(/\/stubs\/stub\.js$/.test(file.stub), 'path to stub')
+  t.equal(new File('f', {
+    stub: 'thestub.js'
+  }).stub, 'thestub.js', 'custom stub')
+  clock.restore()
+  t.end()
+})
 
-  describe('Constructor', () => {
-    it('generates a filename with the timestamp', () => {
-      const file = new File('name', {
-        extension: 'js'
-      })
-      expect(file.filename).to.equal('19700101190000_name.js')
-    })
+test('template', (t) => {
+  const stub = 'stub.js'
+  sinon.stub(fs, 'readFile')
+    .withArgs(stub)
+    .yields(null, new Buffer('<%= d.tableName %>'))
 
-    it('stores variables', () => {
-      const variables = {}
-      expect(new File('name', {
-        variables
-      }))
-      .to.have.property('variables', variables)
-    })
-
-    it('finds the stub', () => {
-      const file = new File('name', {
-        extension: 'js'
-      })
-      expect(isAbsolute(file.stub)).to.equal(true)
-      expect(file.stub.endsWith('/stubs/stub.js')).to.equal(true)
-    })
-
-    it('can use a custom stub', () => {
-      expect(new File('name', {
-        stub: 'thestub.js'
-      }))
-      .to.have.property('stub', 'thestub.js')
-    })
-
-  })
-
-  describe('#template', () => {
-    it('resolves a compiled template', () => {
-      const stub = 'stub.js'
-      sinon.stub(fs, 'readFile')
-        .withArgs(stub)
-        .yields(null, new Buffer('<%= d.tableName %>'))
-      return new File('name', {
-        stub
-      })
-      .template()
-      .then((template) => {
-        expect(template).to.be.a('function')
-        return template({
-          tableName: 'table'
-        })
-      })
-      .then((output) => {
-        expect(output).to.equal('table')
-      })
-      .finally(() => {
-        fs.readFile.restore()
-      })
-    })
-
-  })
-
-  describe('#write', () => {
-    const file = new File('name', {
-      variables: {
+  return new File('name', {stub})
+    .template()
+    .then((template) => {
+      t.equal(typeof template, 'function', 'creates template fn')
+      return template({
         tableName: 'table'
-      }
+      })
     })
-    file.filename = 'name.js'
-    sinon.stub(file, 'template')
-      .resolves(template('<%= d.tableName %>', {
-        variable: 'd'
-      }))
-    before(() => {
-      sinon.stub(fs, 'writeFile').yields(null)
+    .then((output) => {
+      t.equal(output, 'table')
     })
-    after(() => {
+    .finally(() => {
+      fs.readFile.restore()
+    })
+})
+
+test('write', (t) => {
+  const file = new File('name', {
+    variables: {
+      tableName: 'table'
+    }
+  })
+  file.filename = 'name.js'
+  sinon.stub(file, 'template')
+    .resolves(template('<%= d.tableName %>', {
+      variable: 'd'
+    }))
+  sinon.stub(fs, 'writeFile').yields(null)
+  return file.write('thedir')
+    .then((path) => {
+      t.equal(path, 'thedir/name.js', 'resolves file path')
+      sinon.assert.calledWith(
+        fs.writeFile,
+        'thedir/name.js',
+        'table'
+      )
+    })
+    .finally(() => {
       fs.writeFile.restore()
     })
-
-    it('writes the migration file', function () {
-      return file.write('thedir')
-        .then(() => {
-          expect(fs.writeFile).to.have.been.calledWith(
-            'thedir/name.js',
-            'table'
-          )
-        })
-    })
-
-    it('resolves the path', function () {
-      return file.write('thedir')
-        .then((path) => {
-          expect(path).to.equal('thedir/name.js')
-        })
-    })
-
-  })
-
 })

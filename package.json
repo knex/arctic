@@ -4,7 +4,8 @@
   "description": "Database migration API for Knex",
   "main": "./src",
   "scripts": {
-    "test": "standard && mocha --compilers js:babel/register",
+    "lint": "standard",
+    "test": "npm run lint && babel-tape-runner test/*",
     "coverage": "babel-node $(npm bin)/isparta cover --report text --report html $(npm bin)/_mocha -- --reporter dot"
   },
   "repository": {
@@ -28,14 +29,12 @@
   ],
   "devDependencies": {
     "babel": "^4.7.16",
-    "chai": "^2.1.2",
-    "chai-as-promised": "^4.3.0",
+    "babel-tape-runner": "~1.1.0",
+    "blue-tape": "~0.1.8",
     "isparta": "^2.2.0",
-    "mocha": "^2.2.1",
     "proxyquire": "^1.4.0",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^2.0.3",
-    "sinon-chai": "^2.7.0",
     "standard": "~3.6.1"
   },
   "dependencies": {
