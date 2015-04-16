@@ -4,7 +4,7 @@
   "description": "Database migration API for Knex",
   "main": "./src",
   "scripts": {
-    "test": "mocha --compilers js:babel/register",
+    "test": "standard && mocha --compilers js:babel/register",
     "coverage": "babel-node $(npm bin)/isparta cover --report text --report html $(npm bin)/_mocha -- --reporter dot"
   },
   "repository": {
@@ -35,12 +35,18 @@
     "proxyquire": "^1.4.0",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^2.0.3",
-    "sinon-chai": "^2.7.0"
+    "sinon-chai": "^2.7.0",
+    "standard": "~3.6.1"
   },
   "dependencies": {
     "bluebird": "^2.9.14",
     "easydate": "^1.2.1",
     "lodash.template": "^3.3.2",
     "xtend": "^4.0.0"
+  },
+  "standard": {
+    "ignore": [
+      "src/stubs/*"
+    ]
   }
 }
