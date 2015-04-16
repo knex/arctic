@@ -1,12 +1,12 @@
 'use strict'
 
-import fs from 'fs'
+import f from 'fs'
 import Promise from 'bluebird'
 import {join, resolve} from 'path'
 import date from 'easydate'
 import template from 'lodash.template'
 
-fs = Promise.promisifyAll(fs)
+const fs = Promise.promisifyAll(f)
 
 export default class MigrationFile {
   constructor (name, config) {
