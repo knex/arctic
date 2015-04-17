@@ -5,7 +5,6 @@ import sinon from 'sinon'
 import 'sinon-as-promised'
 import proxyquire from 'proxyquire'
 import {isAbsolute} from 'path'
-import 'babel/polyfill'
 
 const MockFile = sinon.spy()
 const Migrator = proxyquire('../', {
