@@ -3,7 +3,6 @@
 import test from 'blue-tape'
 import sinon from 'sinon'
 import 'sinon-as-promised'
-import sinonChai from 'sinon-chai'
 import proxyquire from 'proxyquire'
 import {isAbsolute} from 'path'
 import 'babel/polyfill'
