@@ -13,7 +13,7 @@ const defaults = {
   directory: './migrations'
 }
 
-class Migrator {
+export default class Migrator {
   constructor (knex) {
     this.knex = knex
     this.config = extend(defaults, knex.client.migrationConfig)
@@ -25,19 +25,20 @@ class Migrator {
   directory () {
     return resolve(process.cwd(), this.config.directory)
   }
+  @configurable
+  make (name) {
+    assert(name, 'A name must be specified for the generated migration')
+    return new MigrationFile(name, this.config).write(this.directory())
+  }
 }
 
-export default Migrator
-
-Migrator.prototype.make = configurable(function (name) {
-  assert(name, 'A name must be specified for the generated migration')
-  return new MigrationFile(name, this.config).write(this.directory())
-})
-
-function configurable (fn) {
-  return function (...args) {
+/*eslint-disable no-unused-vars*/
+function configurable (target, name, descriptor) {
+  const fn = descriptor.value
+  descriptor.value = function (...args) {
     const config = args[fn.length]
     this.configure(config)
     return Promise.try(fn, args.slice(0, config ? -1 : undefined), this)
   }
 }
+/*eslint-enable no-unused-vars*/

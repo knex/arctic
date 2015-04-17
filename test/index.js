@@ -74,5 +74,13 @@ test('make', (t) => {
         MockFile.reset()
       })
   })
+  t.test('passing configuration', (t) => {
+    return migrate.make('users', {
+      extension: 'ts'
+    })
+    .then(() => {
+      t.equal(migrate.config.extension, 'ts', 'applies final arg as config')
+    })
+  })
   t.end()
 })
