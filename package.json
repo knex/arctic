@@ -31,14 +31,17 @@
     "babel-tape-runner": "~1.1.0",
     "blue-tape": "~0.1.8",
     "isparta": "^2.2.0",
+    "knex": "~0.7.6",
     "proxyquire": "^1.4.0",
     "sinon": "^1.14.1",
     "sinon-as-promised": "^2.0.3",
+    "sqlite3": "~3.0.5",
     "standard": "bendrucker/standard#babel"
   },
   "dependencies": {
     "bluebird": "^2.9.14",
     "easydate": "^1.2.1",
+    "interpret": "~0.5.2",
     "lodash.template": "^3.3.2",
     "xtend": "^4.0.0"
   },

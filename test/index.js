@@ -5,6 +5,8 @@ import sinon from 'sinon'
 import 'sinon-as-promised'
 import proxyquire from 'proxyquire'
 import {isAbsolute} from 'path'
+import fs from 'fs'
+import Knex from 'knex'
 
 const MockFile = sinon.spy()
 const Migrator = proxyquire('../', {
@@ -81,4 +83,78 @@ test('make', (t) => {
     })
   })
   t.end()
+})
+
+test('all', (t) => {
+  const migrate = new Migrator({
+    client: {}
+  })
+  sinon.stub(fs, 'readdir').yields(null, [
+    'a.js',
+    'd.js',
+    'b.coffee',
+    'c.md'
+  ])
+  return migrate.all()
+    .then((files) => {
+      t.deepEqual(files, [
+        'a.js',
+        'b.coffee',
+        'd.js'
+      ], 'sorts and filters only js')
+    })
+})
+
+function createKnex () {
+  return Knex({
+    client: 'sqlite',
+    connection: {
+      filename: ':memory:'
+    }
+  })
+}
+
+test('table', (t) => {
+  const migrate = new Migrator(createKnex())
+  return migrate.table()
+    .then((name) => {
+      const expected = 'knex_migrations'
+      t.equal(name, expected, 'resolves table name')
+      return migrate.knex.schema.hasTable(expected)
+    })
+    .then((exists) => {
+      t.ok(exists, 'creates table')
+      return migrate.table()
+    })
+    .then(() => {
+      t.pass('noop if table exists')
+    })
+    .finally(() => {
+      return migrate.knex.destroy()
+    })
+})
+
+test('completed', (t) => {
+  const migrate = new Migrator(createKnex())
+  return migrate.table()
+    .tap((table) => {
+      return migrate.knex(table).insert([
+        {id: 1, name: 'a'},
+        {id: 0, name: 'b'},
+        {id: 2, name: 'c'}
+      ])
+    })
+    .then(() => {
+      return migrate.completed()
+    })
+    .then((names) => {
+      t.deepEqual(names, [
+        'b',
+        'a',
+        'c'
+      ], 'gets names ordered by id')
+    })
+    .finally(() => {
+      return migrate.knex.destroy()
+    })
 })
